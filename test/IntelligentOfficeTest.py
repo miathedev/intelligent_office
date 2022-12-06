@@ -74,3 +74,42 @@ class IntelligentOfficeTest(unittest.TestCase):
 
                 self.office.manage_blinds_based_on_time()
                 self.assertFalse(self.office.blinds_open)
+
+    #######################
+    # Task 3
+    #######################
+
+    #Default off
+
+    @patch("mock.GPIO.input")
+    def test_office_light_management_bright_ambient(self, mock_input):
+        #KeepZone: 500 <= val <= 550
+        mock_input.side_effect = [550, 500, #KeepZone, default off - is off
+            449, #Too dark, light should be lit
+            550,
+            500,
+            551, #Too bright, turn off light
+        ]
+
+        #KeepZone, Default light is off
+        self.office.manage_light_level()
+        self.assertFalse(self.office.light_on)
+
+        #KeepZone
+        self.office.manage_light_level()
+        self.assertFalse(self.office.light_on)
+
+        #If lux < 449 turn on light, dark ambient
+        self.office.manage_light_level()
+        self.assertTrue(self.office.light_on)  # Because its dark
+
+        # KeepZone
+        self.office.manage_light_level()
+        self.assertTrue(self.office.light_on)
+        self.office.manage_light_level()
+        self.assertTrue(self.office.light_on)
+
+
+        #Bright ambient
+        self.office.manage_light_level()
+        self.assertFalse(self.office.light_on)
