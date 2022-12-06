@@ -24,6 +24,9 @@ class IntelligentOffice:
     LUX_MIN = 500
     LUX_MAX = 550
 
+    SERVO_DUTY_CYCLE_BLINDS_OPEN = (180 / 18) + 2
+    SERVO_DUTY_CYCLE_BLINDS_CLOSED = 0 + 2
+
     def __init__(self):
         """
         Constructor
@@ -59,13 +62,32 @@ class IntelligentOffice:
 
         return GPIO.input(pin) > 0
 
+
+    def set_blinds(self, do_open):
+        if not self.blinds_open and do_open:
+            self.blinds_open = True
+            self.change_servo_angle(self.SERVO_DUTY_CYCLE_BLINDS_OPEN)
+        if self.blinds_open and not do_open:
+            self.blinds_open = False
+            self.change_servo_angle(self.SERVO_DUTY_CYCLE_BLINDS_CLOSED)
+
+
+
     def manage_blinds_based_on_time(self) -> None:
         """
         Uses the RTC and servo motor to open/close the blinds based on current time and day.
         The system fully opens the blinds at 8:00 and fully closes them at 20:00
         each day except for Saturday and Sunday.
         """
-        pass
+        current_time = time.strptime(RTC.get_current_time_string(), '%H:%M:%S')
+        weekday = RTC.get_current_day()
+
+        if 8 <= current_time.tm_hour < 20 and weekday not in ["SATURDAY", "SUNDAY"]:
+            self.set_blinds(True)
+        else:
+            self.set_blinds(False)
+
+
 
     def manage_light_level(self) -> None:
         """
