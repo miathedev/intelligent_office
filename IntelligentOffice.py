@@ -7,6 +7,9 @@ from mock.RTC import RTC
 
 class IntelligentOffice:
     # Pin number definition
+    # Infrared Sensor.
+    # 0V ----> Nothing detected
+    # >0V ---> Something is present
     INFRARED_PIN_1 = 11
     INFRARED_PIN_2 = 12
     INFRARED_PIN_3 = 13
@@ -51,7 +54,10 @@ class IntelligentOffice:
         :param pin: The data pin of the sensor that is being checked (e.g., INFRARED_PIN1).
         :return: True if the infrared sensor detects something, False otherwise.
         """
-        pass
+        if pin not in [11, 12, 13, 15]:
+            raise IntelligentOfficeError("Invalid pin/quadrant")
+
+        return GPIO.input(pin) > 0
 
     def manage_blinds_based_on_time(self) -> None:
         """
