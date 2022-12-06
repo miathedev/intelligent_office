@@ -62,6 +62,11 @@ class IntelligentOffice:
 
         return GPIO.input(pin) > 0
 
+    def human_present(self):
+        for pin in [11,12,13,15]:
+            if GPIO.input(pin):
+                return True
+        return False
 
     def set_blinds(self, do_open):
         if not self.blinds_open and do_open:
@@ -107,6 +112,11 @@ class IntelligentOffice:
         stops regulating the light level in the office and then turns off the smart light bulb. 
         When the first worker goes back into the office, the system resumes regulating the light level
         """
+
+        #If no human detect, shut down regulation and disable light
+        if not self.human_present():
+            self.set_light(False)
+            return
 
         lux = GPIO.input(self.PHOTO_PIN)
         if self.LUX_MIN <= lux <= self.LUX_MAX:
