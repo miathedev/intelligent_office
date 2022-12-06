@@ -117,7 +117,7 @@ class IntelligentOfficeTest(unittest.TestCase):
         self.assertFalse(self.office.light_on)
 
     #######################
-    # Task 3
+    # Task 4
     #######################
 
     # Default off
@@ -148,3 +148,25 @@ class IntelligentOfficeTest(unittest.TestCase):
         # Human, no light, its bright
         self.office.manage_light_level()
         self.assertFalse(self.office.light_on)
+
+    #######################
+    # Task 4
+    #######################
+    @patch("mock.GPIO.input")
+    def test_office_air_quality(self, mock_input):
+        mock_input.side_effect = [10,#Clean air, no vent needed
+                                  801, #Bad air dude!
+                                  700,
+                                  500,
+                                  300, #Disable fan again
+                                ]
+
+        self.office.monitor_air_quality()
+        self.assertFalse(self.office.fan_switch_on)
+
+        for i in [1,2,3]:
+            self.office.monitor_air_quality()
+            self.assertTrue(self.office.fan_switch_on)
+
+        self.office.monitor_air_quality()
+        self.assertFalse(self.office.fan_switch_on)
