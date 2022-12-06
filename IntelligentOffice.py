@@ -131,14 +131,19 @@ class IntelligentOffice:
                 self.set_light(False)
 
 
+
     def monitor_air_quality(self) -> None:
         """
         Use the carbon dioxide sensor to monitor the level of CO2 in the office.
         If the amount of detected CO2 is greater than or equal to 800 PPM, the system turns on the
         switch of the exhaust fan until the amount of CO2 is lower than 500 PPM.
         """
-        pass
+        air_ppm = GPIO.input(self.CO2_PIN)
+        if air_ppm > 800 and not self.fan_switch_on:
+            self.fan_switch_on = True
 
+        if air_ppm < 500 and self.fan_switch_on:
+            self.fan_switch_on = False
     def change_servo_angle(self, duty_cycle: float) -> None:
         """
         Changes the servo motor's angle by passing to it the corresponding PWM duty cycle signal
