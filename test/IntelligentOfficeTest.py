@@ -150,7 +150,7 @@ class IntelligentOfficeTest(unittest.TestCase):
         self.assertFalse(self.office.light_on)
 
     #######################
-    # Task 4
+    # Task 5
     #######################
     @patch("mock.GPIO.input")
     def test_office_air_quality(self, mock_input):
